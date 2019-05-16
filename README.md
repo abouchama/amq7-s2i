@@ -4,8 +4,6 @@ Configuration of the AMQ7 image can also be modified using the S2I (Source-to-im
 
 Custom AMQ broker configuration can be specified by creating an broker.xml file inside the git directory of your application’s Git project root. On each commit, the file will be copied to the conf directory in the AMQ root and its contents used to configure the broker.
 
-##S2I Build OpenShift:
-
 Create first a new project (namespace) called Broker:
 ```
 oc new-project broker
@@ -33,7 +31,7 @@ $ oc new-build registry.redhat.io/amq-broker-7/amq-broker-73-openshift:7.3~https
 --> Success
 ```
 
-- To stream the build progress, run 'oc logs -f bc/amq7-s2i', You can see here that our conf broker.xml has been copied to the image stream:
+To stream the build progress, run 'oc logs -f bc/amq7-s2i', You can see here that our conf broker.xml has been copied to the image stream:
 
 ```
 $ oc logs -f bc/amq7-s2i
@@ -52,18 +50,18 @@ Pushed 5/5 layers, 100% complete
 Push successful
 ```
 
-###create the service account "amq-service-account"
+Create the service account "amq-service-account"
 ```
 echo '{"kind": "ServiceAccount", "apiVersion": "v1", "metadata": {"name": "amq-service-account"}}' | oc create -f -
 serviceaccount "amq-service-account" created
 ```
 
-###ensure the service account is added to the namespace for view permissions... (for pod scaling)
+Ensure the service account is added to the namespace for view permissions... (for pod scaling)
 ```
 oc policy add-role-to-user view system:serviceaccount:broker:amq-service-account
 ```
 
-### Install templates in the namespace broker:
+Install templates in the namespace broker:
 ```
 for template in amq-broker-73-basic.yaml \
 amq-broker-73-ssl.yaml \
@@ -94,7 +92,7 @@ For instance:
 oc process amq-broker-73-basic -p APPLICATION_NAME=broker-s2i -p AMQ_NAME=broker-s2i -p AMQ_USER=user -p AMQ_PASSWORD=password -p AMQ_PROTOCOL=openwire,amqp,stomp,mqtt,hornetq -p IMAGE_STREAM_NAMESPACE=broker -p IMAGE=172.30.1.1:5000/broker/amq7-s2i -n broker | oc create -f -
 ```
 
-##Update of broker.xml
+Update of broker.xml
 
 You should setup the GitHub webhook URL in order to trigger a new build after each update.
 
