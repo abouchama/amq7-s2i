@@ -48,28 +48,6 @@ Pushed 5/5 layers, 100% complete
 Push successful
 ```
 
-Let's get now, our image stream URL:
-
-```
-$ oc get is
-NAME                      DOCKER REPO                                      TAGS         UPDATED
-amq-broker-73-openshift   172.30.1.1:5000/broker/amq-broker-73-openshift   7.3,latest   33 minutes ago
-amq7-s2i                  172.30.1.1:5000/broker/amq7-s2i                  latest       About a minute ago
-```
-Now, you have to change the image steam on the template "amq-broker-73-basic-s2i.yaml", like following:
-```
-- description: Broker Image
-  displayName: Image
-  name: IMAGE
-  required: true
-  value: 172.30.1.1:5000/broker/amq7-s2i
-```
-
-###create the template in the namespace
-```
-$ oc create -n broker -f amq-broker-73-basic-s2i.yaml
-template.template.openshift.io/amq-broker-73-basic-s2i created
-```
 ###create the service account "amq-service-account"
 ```
 echo '{"kind": "ServiceAccount", "apiVersion": "v1", "metadata": {"name": "amq-service-account"}}' | oc create -f -
@@ -81,10 +59,35 @@ serviceaccount "amq-service-account" created
 oc policy add-role-to-user view system:serviceaccount:broker:amq-service-account
 ```
 
-###use the template in the namespace then to create your Broker:
+### Install templates in the namespace broker:
+```
+for template in amq-broker-73-basic.yaml \
+amq-broker-73-ssl.yaml \
+amq-broker-73-custom.yaml \
+amq-broker-73-persistence.yaml \
+amq-broker-73-persistence-ssl.yaml \
+amq-broker-73-persistence-clustered.yaml \
+amq-broker-73-persistence-clustered-ssl.yaml;
+ do
+ oc replace --force -f \
+https://raw.githubusercontent.com/jboss-container-images/jboss-amq-7-broker-openshift-image/73-7.3.0.GA/templates/${template}
+ done
+```
+
+Let's get now, our image stream URL:
 
 ```
-oc process amq-broker-73-basic-s2i -p APPLICATION_NAME=broker-s2i -p AMQ_NAME=broker-s2i -p AMQ_USER=amq-demo-user -p AMQ_PASSWORD=password -p AMQ_PROTOCOL=openwire,amqp,stomp,mqtt,hornetq -p IMAGE_STREAM_NAMESPACE=broker -n broker | oc create -f -
+$ oc get is
+NAME                      DOCKER REPO                                      TAGS         UPDATED
+amq-broker-73-openshift   172.30.1.1:5000/broker/amq-broker-73-openshift   7.3,latest   33 minutes ago
+amq7-s2i                  172.30.1.1:5000/broker/amq7-s2i                  latest       About a minute ago
+```
+
+Specify the image (172.30.1.1:5000/broker/amq7-s2i) in one of the templates installed above in the parameter 'IMAGE':
+For instance:
+
+```
+oc process amq-broker-73-basic -p APPLICATION_NAME=broker-s2i -p AMQ_NAME=broker-s2i -p AMQ_USER=user -p AMQ_PASSWORD=password -p AMQ_PROTOCOL=openwire,amqp,stomp,mqtt,hornetq -p IMAGE_STREAM_NAMESPACE=broker -p IMAGE=172.30.1.1:5000/broker/amq7-s2i -n broker | oc create -f -
 ```
 
 ##Update of broker.xml
