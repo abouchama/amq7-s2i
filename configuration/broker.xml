@@ -26,7 +26,9 @@ under the License.
    <core xmlns="urn:activemq:core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="urn:activemq:core ">
 
-      <name>broker</name>
+     <!-- Changed via S2I by ABEL -->
+     
+      <name>broker-s2i</name>
 
 
       <persistence-enabled>true</persistence-enabled>
