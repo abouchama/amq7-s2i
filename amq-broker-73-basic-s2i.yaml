@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Template
 labels:
-  template: amq-broker-73-basic
+  template: amq-broker-73-basic-s2i
   xpaas: 1.4.16
 message: A new messaging service has been created in your project. It will handle the protocol(s) "${AMQ_PROTOCOL}". The username/password for accessing the service is ${AMQ_USER}/${AMQ_PASSWORD}.
 metadata:
@@ -16,7 +16,7 @@ metadata:
       This template defines resources needed to develop a Red Hat AMQ Broker 7.3 based application, including a deployment configuration, using ephemeral (temporary) storage.
     template.openshift.io/support-url: 'https://access.redhat.com'
     version: 1.4.16
-  name: amq-broker-73-basic
+  name: amq-broker-73-basic-s2i
 objects:
 - apiVersion: v1
   kind: Service
@@ -237,4 +237,4 @@ parameters:
   displayName: Image
   name: IMAGE
   required: true
-  value: registry.redhat.io/amq-broker-7/amq-broker-73-openshift:7.3
+  value: 172.30.1.1:5000/broker/amq7-s2i
