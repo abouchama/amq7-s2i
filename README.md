@@ -104,4 +104,3 @@ $ oc deploy broker-amq --latest -n broker
 Started deployment #2
 Use 'oc logs -f dc/broker-amq' to track its progress.
 ```
-
