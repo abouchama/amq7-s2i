@@ -1,4 +1,8 @@
-# amq7-s2i
+# How to deploy AMQ7 on OpenShift using S2I
+
+Configuration of the AMQ7 image can also be modified using the S2I (Source-to-image) feature.
+
+Custom AMQ broker configuration can be specified by creating an broker.xml file inside the git directory of your application’s Git project root. On each commit, the file will be copied to the conf directory in the AMQ root and its contents used to configure the broker.
 
 ##S2I Build OpenShift:
 
