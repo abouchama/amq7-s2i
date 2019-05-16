@@ -60,30 +60,15 @@ Now, you have to change the image steam on the template "template-amq62-basic-s2
 ```
 "image": "172.30.1.1:5000/broker/amq7-s2i"
 ```
-Also, in triggers, change the name of the image stream tag in order to trigger a new deployment when it detect an Image Change:
-
-```
-"kind": "ImageStreamTag",
-"namespace": "${IMAGE_STREAM_NAMESPACE}",
-"name": "amq7-s2i:latest"
-```
-In order to get the image stream tag, run the following command:
-```
-$ oc get istag
-NAME                             DOCKER REF                                                                                                                        UPDATED
-amq-broker-73-openshift:7.3      registry.redhat.io/amq-broker-7/amq-broker-73-openshift@sha256:5003e612962f130ff2e3e12fae6b0a2d808c2ef65ec97300ed3060db72481067   35 minutes ago
-amq-broker-73-openshift:latest   registry.redhat.io/amq-broker-7/amq-broker-73-openshift@sha256:5003e612962f130ff2e3e12fae6b0a2d808c2ef65ec97300ed3060db72481067   35 minutes ago
-amq7-s2i:latest                  172.30.1.1:5000/broker/amq7-s2i@sha256:70687d615cd490b483f63bfe12e7a1be7999f4ce37350ce0d70496b05a14b986                           3 minutes ago
-```
 
 ###create the template in the namespace
 ```
-$ oc create -n broker -f template-amq63-basic-s2i.json 
+$ oc create -n broker -f amq-broker-73-basic-s2i.yaml
 template.template.openshift.io/amq63-basic-s2i created
 ```
 ###create the service account "amq-service-account"
 ```
-oc create -f https://raw.githubusercontent.com/abouchama/amq63-basic-s2i/master/amq-service-account.json
+echo '{"kind": "ServiceAccount", "apiVersion": "v1", "metadata": {"name": "amq-service-account"}}' | oc create -f -
 serviceaccount "amq-service-account" created
 ```
 
@@ -91,3 +76,33 @@ serviceaccount "amq-service-account" created
 ```
 oc policy add-role-to-user view system:serviceaccount:broker:amq-service-account
 ```
+
+###use the template in the namespace then to create your Broker:
+
+```
+oc new-app --template=amq-broker-73-basic \
+>    -e AMQ_PROTOCOL=openwire,amqp,stomp,mqtt,hornetq \
+>    -e AMQ_QUEUES=demoQueue \
+>    -e AMQ_ADDRESSES=demoTopic \
+>    -e AMQ_USER=amq-demo-user \
+>    -e ADMIN_PASSWORD=password
+```
+
+##Update of broker.xml
+
+You should setup the GitHub webhook URL in order to trigger a new build after each update.
+
+You can also do it manually, like following:
+```
+$ git commit -am "changing my broker conf"
+
+$ git push -u origin master
+
+$ oc start-build amq7-s2i -n broker
+build "amq7-s2i-2" started
+
+$ oc deploy broker-amq --latest -n broker
+Started deployment #2
+Use 'oc logs -f dc/broker-amq' to track its progress.
+```
+
