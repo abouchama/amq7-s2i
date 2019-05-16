@@ -80,12 +80,7 @@ oc policy add-role-to-user view system:serviceaccount:broker:amq-service-account
 ###use the template in the namespace then to create your Broker:
 
 ```
-oc new-app --template=amq-broker-73-basic \
->    -e AMQ_PROTOCOL=openwire,amqp,stomp,mqtt,hornetq \
->    -e AMQ_QUEUES=demoQueue \
->    -e AMQ_ADDRESSES=demoTopic \
->    -e AMQ_USER=amq-demo-user \
->    -e ADMIN_PASSWORD=password
+oc process amq-broker-73-basic-s2i -p APPLICATION_NAME=broker-s2i -p AMQ_NAME=broker-s2i -p AMQ_USER=amq-demo-user -p AMQ_PASSWORD=password -p AMQ_PROTOCOL=openwire,amqp,stomp,mqtt,hornetq -p IMAGE_STREAM_NAMESPACE=broker -n broker | oc create -f -
 ```
 
 ##Update of broker.xml
