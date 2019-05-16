@@ -64,7 +64,7 @@ Now, you have to change the image steam on the template "template-amq62-basic-s2
 ###create the template in the namespace
 ```
 $ oc create -n broker -f amq-broker-73-basic-s2i.yaml
-template.template.openshift.io/amq63-basic-s2i created
+template.template.openshift.io/amq-broker-73-basic-s2i created
 ```
 ###create the service account "amq-service-account"
 ```
