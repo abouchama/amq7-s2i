@@ -29,7 +29,7 @@ $ oc new-build registry.redhat.io/amq-broker-7/amq-broker-73-openshift:7.3~https
 --> Success
 ```
 
-To stream the build progress, run 'oc logs -f bc/amq63-basic-s2i', You can see here that our conf openshift-activemq.xml has been copied to the image stream:
+- To stream the build progress, run 'oc logs -f bc/amq7-s2i', You can see here that our conf broker.xml has been copied to the image stream:
 
 ```
 $ oc logs -f bc/amq7-s2i
@@ -56,9 +56,13 @@ NAME                      DOCKER REPO                                      TAGS 
 amq-broker-73-openshift   172.30.1.1:5000/broker/amq-broker-73-openshift   7.3,latest   33 minutes ago
 amq7-s2i                  172.30.1.1:5000/broker/amq7-s2i                  latest       About a minute ago
 ```
-Now, you have to change the image steam on the template "template-amq62-basic-s2i.json", like following:
+Now, you have to change the image steam on the template "amq-broker-73-basic-s2i.yaml", like following:
 ```
-"image": "172.30.1.1:5000/broker/amq7-s2i"
+- description: Broker Image
+  displayName: Image
+  name: IMAGE
+  required: true
+  value: 172.30.1.1:5000/broker/amq7-s2i
 ```
 
 ###create the template in the namespace
