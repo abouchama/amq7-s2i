@@ -1,0 +1,20 @@
+#!/bin/sh
+
+SRCPATCH=/tmp/src/patch
+
+
+if [ -d ${SRCPATCH} ]; then
+  echo "############ Patch 3023 - HF 6 ############"
+
+echo "Delete artemis-server-2.9.0.redhat-00005.jar from image..."
+rm $AMQ_HOME/artemis-server-2.9.0.redhat-00005.jar
+
+chmod +x ${SRCPATCH}/*
+chmod +x ${SRCPATCH}/lib/*
+
+cp -v ${SRCPATCH}/lib/* $AMQ_HOME/lib/
+
+echo "############ End - Patch 3023 - HF 6 ############"
+fi
+
+exit 0
